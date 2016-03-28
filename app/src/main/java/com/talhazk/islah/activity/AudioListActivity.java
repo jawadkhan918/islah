@@ -1,10 +1,13 @@
 package com.talhazk.islah.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -36,6 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,8 +52,8 @@ import java.util.Map;
 
 public class AudioListActivity extends AppCompatActivity {
 
-  //  public  ayats = new ArrayList<Ayats>();
-  private ProgressDialog pDialog;
+    //  public  ayats = new ArrayList<Ayats>();
+    private ProgressDialog pDialog;
     private List<Ayats> ayats;
     String jsonResponse;
     RequestQueue requestQueue;
@@ -63,7 +67,28 @@ public class AudioListActivity extends AppCompatActivity {
     String catImage;
     private String mMsg = "Try Again.";
     int position;
-    MediaPlayer mediaPlayer=null;
+    MediaPlayer mediaPlayer = null;
+    //start
+    private MediaPlayer mPlayer = new MediaPlayer();
+
+    // Listview
+
+    // Flags to take Decisions
+    private Boolean isPlay = true;
+    private boolean playFlag = false;
+
+    // Row Positions
+    private int pos;
+    private int latestPos = -1;
+
+    // Row view
+    private View latestView;
+    private View view;
+
+    // Audio Play Pos
+    private static int playPos = -1;
+//end
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,8 +97,10 @@ public class AudioListActivity extends AppCompatActivity {
         /*if(ayats.isEmpty())
             getCategoryList();
 */
+
+
         ayats = new ArrayList<>();
-        this.mainImage = (ImageView)findViewById(R.id.headerImage);
+        this.mainImage = (ImageView) findViewById(R.id.headerImage);
 
         pDialog = new ProgressDialog(this);
         pDialog.setMessage("Loading...");
@@ -81,15 +108,15 @@ public class AudioListActivity extends AppCompatActivity {
 
 
         catName = (TextView) findViewById(R.id.catName);
-        Intent i= getIntent();
+        Intent i = getIntent();
         position = i.getExtras().getInt("position");
         catName.setText(MainActivity.categoryItems.get(position).getName());
         catId = MainActivity.categoryItems.get(position).getId();
         catImage = MainActivity.categoryItems.get(position).getImage();
-        Log.i("image url is.",catImage);
-        Log.i("pos",""+position);
+        Log.i("image url is.", catImage);
+        Log.i("pos", "" + position);
         Log.i("sda", "" + MainActivity.categoryItems.get(position));
-        recyclerView = (RecyclerView)findViewById(R.id.my_recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -143,7 +170,7 @@ public class AudioListActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d("Error", "Error: " + error.getMessage());
                 Toast.makeText(AudioListActivity.this, "Try again!! ", Toast.LENGTH_SHORT).show();
-               hideProgressDialog();
+                hideProgressDialog();
             }
         }) {
 
@@ -167,6 +194,7 @@ public class AudioListActivity extends AppCompatActivity {
         requestQueue.add(strReq);
 
     }
+
     private void parseData(String response) {
 
 
@@ -202,15 +230,15 @@ public class AudioListActivity extends AppCompatActivity {
                     int ayatId = -1;
                     String ayatTitle = "";
                     String islahAudio = "";
-                    String ayatNo="";
-                    String splitter="";
+                    String ayatNo = "";
+                    String splitter = "";
 
-                    ayatStatus =  Integer.parseInt(json.getString(Config.AYAT_STATUS));
+                    ayatStatus = Integer.parseInt(json.getString(Config.AYAT_STATUS));
                     ayatId = Integer.parseInt(json.getString(Config.AYAT_ID));
 
                     splitter = json.getString(Config.AYAT_TITLE);
 
-                    islahAudio= json.getString(Config.ISLAH_AUDIO);
+                    islahAudio = json.getString(Config.ISLAH_AUDIO);
 
                     String[] parts = splitter.split("Ayat");
                     String part1 = parts[0]; // 004
@@ -219,7 +247,7 @@ public class AudioListActivity extends AppCompatActivity {
                     ayatTitle = part1;
                     ayatNo = "Ayat " + part2;
 
-                    Ayats ayatList = new Ayats(ayatStatus,ayatId,ayatTitle,ayatNo,islahAudio);
+                    Ayats ayatList = new Ayats(ayatStatus, ayatId, ayatTitle, ayatNo, islahAudio);
                     ayats.add(ayatList);
 
 
@@ -227,15 +255,16 @@ public class AudioListActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-           // }
+                // }
 
 
-        }}catch (JSONException e) {
+            }
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
         //Finally initializing our adapter
-    //    adapter = new OrderHistoryAdapter(listOrderHistory, getActivity());
+        //    adapter = new OrderHistoryAdapter(listOrderHistory, getActivity());
 
         //Adding adapter to recyclerview
         recyclerView.setAdapter(adapter);
@@ -245,7 +274,7 @@ public class AudioListActivity extends AppCompatActivity {
 
     }
 
-        private  class MyRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private class MyRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         //    private static final int TYPE_HEADER = 0;
         private static final int TYPE_ITEM = 0;
@@ -266,6 +295,7 @@ public class AudioListActivity extends AppCompatActivity {
             }
             throw new RuntimeException("there is no type that matches the type " + viewType + " + make sure your using types correctly");
         }
+
         private Ayats getItem(int position) {
 
             return ayats.get(position);
@@ -304,37 +334,84 @@ public class AudioListActivity extends AppCompatActivity {
             TextView ayatTitle;
             TextView ayatNo;
             public ImageButton play;
-            public VHItem(View itemView) {
+            public ImageButton whatsappBtn;
+            public ImageButton fbBtn;
+
+
+            public VHItem(final View itemView) {
                 super(itemView);
 
-                this.ayatNo = (TextView)itemView.findViewById(R.id.ayatNo);
-                this.ayatTitle = (TextView)itemView.findViewById(R.id.titleName);
-                play = (ImageButton)itemView.findViewById(R.id.playButton);
-
-
+                this.ayatNo = (TextView) itemView.findViewById(R.id.ayatNo);
+                this.ayatTitle = (TextView) itemView.findViewById(R.id.titleName);
+                this.play = (ImageButton) itemView.findViewById(R.id.playButton);
+                this.whatsappBtn = (ImageButton) itemView.findViewById(R.id.whatsappBtn);
+                this.fbBtn= (ImageButton)itemView.findViewById(R.id.fbBtn);
 
                 //itemView.setClickable(true);
                 play.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                     //  switch (play.getId()) {
-                           //case R.id.playButton:
-                           play.setBackgroundResource(R.drawable.button_pause);
-                           int pos = getAdapterPosition();
-                           Toast.makeText(v.getContext(), "clickable " + pos, Toast.LENGTH_SHORT).show();
-                           playAyat(pos);
-                           //    break;
+                        //  switch (play.getId()) {
+                        //case R.id.playButton:
+                        play.setBackgroundResource(R.drawable.button_pause);
+                        int pos = getAdapterPosition();
+                        Toast.makeText(v.getContext(), "clickable " + pos, Toast.LENGTH_SHORT).show();
+                        playAyat(itemView, pos);
+             //yahan play aayat ki jagah play audio laga...for 1sst ayat only
+                        //    break;
+            //    playAudio(itemView,0);
+                        //}
+                    }
+                });
 
-                       //}
+                whatsappBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //  switch (play.getId()) {
+                        //case R.id.playButton:
+                        playAudio(pos);
+
+                        whatsappBtn.setBackgroundResource(R.drawable.button_pause);
+                        int pos = getAdapterPosition();
+                        Toast.makeText(v.getContext(), "clicker " + pos, Toast.LENGTH_SHORT).show();
+                        //     playAyat(itemView, pos);
+
+
+                    }
+                });
+
+                fbBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //  switch (play.getId()) {
+                        //case R.id.playButton:
+                      //  playAudio(pos);
+
+                        fbBtn.setBackgroundResource(R.drawable.button_pause);
+                        int pos = getAdapterPosition();
+                        Toast.makeText(v.getContext(), "clicker " + pos, Toast.LENGTH_SHORT).show();
+                        //     playAyat(itemView, pos);
+                        playing(pos);
+
                     }
                 });
             }
         }
     }
 
-    private void playAyat(int pos) {
+    private void playAyat(View view, int pos) {
         String audioId = ayats.get(pos).getIslahAudio();
-        mediaPlayer = new MediaPlayer();
+        String arg[] = new String[2];
+
+        arg[1] = audioId;
+        arg[0] = Config.AUDIO_URL + audioId + ".mp3";
+        new com.talhazk.islah.httpcontrol.HttpAudio(this, "")
+                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, arg);
+        //playit(pos);
+
+       // playAudio(view, pos);
+
+        /*mediaPlayer = new MediaPlayer();
         String file_path = Config.AUDIO_URL+audioId+".mp3";
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
@@ -352,6 +429,174 @@ public class AudioListActivity extends AppCompatActivity {
                 mediaPlayer=null;
             //    btn.setEnabled(true);
             }
+        });*/
+
+    }
+
+    public void playAudio( int position) {
+        Log.d("play audio","called");
+        String audioId = ayats.get(position).getIslahAudio();
+
+        String filePath = getDir("audio", Context.MODE_PRIVATE).toString()
+                + "/"
+                + Config.AUDIO_URL + audioId
+                + ".mp3";
+        Log.d("playAudio", "audio called" + filePath);
+        File file = new File(filePath);
+//        adapter.notifyDataSetChanged();
+        if (file.exists()) {
+            if (isPlay) {
+                isPlay = !isPlay;
+                playPos = pos = position;
+                //view = v;
+//                playBtn = (ImageView) view.findViewById(R.id.playBtn);
+                //              playBtn.setBackgroundResource(R.drawable.ic_action_stop);
+                try {
+                    String fName = getDir("audio", Context.MODE_PRIVATE)
+                            .getAbsolutePath()
+                            + "/"
+                            + Config.AUDIO_URL + audioId + ".mp3";
+                    mPlayer.setDataSource(this, Uri.parse(fName));
+                    mPlayer.prepareAsync();
+                } catch (IllegalArgumentException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (SecurityException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IllegalStateException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }/*
+            } else if (pos == getListView().getPositionForView(v)) {
+                if (isPlay) {
+               //     playBtn = (ImageView) v.findViewById(R.id.playBtn);
+                 //   playBtn.setBackgroundResource(R.drawable.ic_action_stop);
+                } else {
+                   // playBtn = (ImageView) v.findViewById(R.id.playBtn);
+                   // playBtn.setBackgroundResource(R.drawable.ic_action_play);
+                    if (mPlayer != null) {
+                        // mPlayer.stop();
+                        if (mPlayer.isPlaying()) {
+                            mPlayer.stop();
+                            mPlayer.reset();
+                            playPos = -1;
+
+                        }
+                    }
+                }
+                isPlay = !isPlay;
+
+                // pos = position;
+            } else {
+
+                // Log.e("PLAY", );
+                if (mPlayer != null) {
+                    if (mPlayer.isPlaying()) {
+                        mPlayer.stop();
+                        mPlayer.reset();
+                        playPos = -1;
+                        adapter.notifyDataSetChanged();
+                        isPlay = true;
+
+                    }
+                    pos = position;
+
+                    if (isPlay) {
+                        playPos = position;
+                        try {
+                            String fName = getDir("audio", Context.MODE_PRIVATE)
+                                    .getAbsolutePath()
+                                    + "/"
+                                    + Config.AUDIO_URL + audioId + ".mp3";
+                            mPlayer.setDataSource(this, Uri.parse(fName));
+                            mPlayer.prepareAsync();
+                        } catch (IllegalArgumentException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } catch (SecurityException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } catch (IllegalStateException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+
+                        // Log.e("Button", " Media Player");
+             //           playBtn = (ImageView) v.findViewById(R.id.playBtn);
+               //         playBtn.setBackgroundResource(R.drawable.ic_action_stop);
+                        isPlay = !isPlay;
+                    }
+
+                }
+
+            }
+        }
+
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            public void onCompletion(MediaPlayer mp) {
+                playPos = -1;
+                mPlayer.reset();
+                isPlay = !isPlay;
+                adapter.notifyDataSetChanged();
+            }
         });
-     }
+*/
+            mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                public void onPrepared(MediaPlayer mp) {
+                    mPlayer.start();
+                }
+            });
+
+            //   latestPos = -1;
+
+        }
+    }
+
+
+        public void playing(int pos){
+            String audioId = ayats.get(pos).getIslahAudio();
+            String filePath = getDir("audio", Context.MODE_PRIVATE).toString()
+                    + "/"
+                    + Config.AUDIO_URL + audioId
+                    + ".mp3";
+            Log.d("playAudio", "audio called" + filePath);
+            File file = new File(filePath);
+            if(file.exists()){
+                Log.d("file exits in this path",""+filePath);
+            }else{ Log.d("file exits in this path","not exits");}
+            Uri myUri1 = Uri.parse("file:///data/data/com.talhazk.islah/app_audio/"+ audioId +".mp3");
+            mPlayer = new MediaPlayer();
+            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+
+            try {
+                mPlayer.setDataSource(getApplicationContext(), myUri1);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+            } catch (SecurityException e) {
+                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+            } catch (IllegalStateException e) {
+                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                mPlayer.prepare();
+            } catch (IllegalStateException e) {
+                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+            }
+            mPlayer.start();
+        }
+
 }
