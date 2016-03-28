@@ -1,0 +1,36 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CCC"
+    tools:context="com.pakaims.rdit.dell.suggestions.CatagoriesDrawerFragment">
+
+    <LinearLayout
+        android:id="@+id/drawer_profile_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:id="@+id/drawer_imageView"
+            android:layout_below="@+id/drawer_profile_image"
+            android:src="@drawable/whats_icon"
+            android:layout_alignParentStart="true" />
+
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/drawerList_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/drawer_profile_image">
+
+    </android.support.v7.widget.RecyclerView>
+
+
+
+</RelativeLayout>

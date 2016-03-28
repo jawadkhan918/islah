@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:orientation="vertical"
+   android:id="@+id/mainlinear"
+    >
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    >
+      <ImageButton
+          android:id="@+id/playButton"
+        android:layout_margin="5dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/button_play"
+        android:layout_gravity="center_vertical"
+        />
+
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:paddingLeft="15dp"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/titleName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AL Baqrah "
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"/>
+    <TextView
+        android:id="@+id/ayatNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Not found"
+        android:gravity="center_horizontal"/>
+</LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:id="@+id/relativelist"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="right"
+            android:padding="5dp"
+            android:gravity="center_vertical"
+            android:paddingTop="10dp"
+            android:id="@+id/linearlist">
+
+
+            <ImageButton
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/star_unfilled"
+                android:layout_marginRight="15dp"
+
+                android:layout_gravity="center_vertical"
+                />
+       <ImageButton
+                android:layout_width="20dp"
+          android:layout_height="20dp"
+           android:background="@drawable/whats_icon"
+           android:layout_marginRight="15dp"
+
+           />
+       <ImageButton
+         android:layout_marginRight="15dp"
+           android:layout_width="20dp"
+           android:layout_height="20dp"
+           android:background="@drawable/fb_messenger_icon"
+            />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</LinearLayout>
+
+</LinearLayout>
