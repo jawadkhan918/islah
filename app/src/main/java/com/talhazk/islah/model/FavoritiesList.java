@@ -8,6 +8,7 @@ public class FavoritiesList {
 	private static FavoritiesList sFavoritiesList;
 	
 	private FavoritiesList() {
+
 		mFvrt = new ArrayList<Favorities>();
 	}
 	public static FavoritiesList get() {

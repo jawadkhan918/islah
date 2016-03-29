@@ -10,6 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/commons-io-2.4" />
             <option value="$PROJECT_DIR$/drawerlibrary" />
             <option value="$PROJECT_DIR$/volley" />
           </set>

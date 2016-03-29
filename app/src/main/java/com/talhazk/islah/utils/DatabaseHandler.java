@@ -9,6 +9,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.talhazk.islah.model.Category;
 import com.talhazk.islah.model.Favorities;
@@ -67,8 +68,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + " TEXT" + ")";
 
         db.execSQL(CREATE_FAVORITES_TABLE);
-        db.execSQL(CREATE_TRENDING_TABLE);
-        db.execSQL(CREATE_CATEGORIES_TABLE);
+  //      db.execSQL(CREATE_TRENDING_TABLE);
+//        db.execSQL(CREATE_CATEGORIES_TABLE);
 
     }
 
@@ -148,7 +149,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 FavoritiesList.get().addFavorities(
                         new Favorities(cursor.getInt(0), cursor.getString(1),
                                 cursor.getString(2)));
-
+                Log.e("print,",""+cursor.getString(2));
             } while (cursor.moveToNext());
         }
         db.close();

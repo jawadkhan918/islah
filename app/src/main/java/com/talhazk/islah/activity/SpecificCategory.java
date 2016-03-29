@@ -45,6 +45,8 @@ package com.talhazk.islah.activity;
         import com.squareup.picasso.Picasso;
         import com.talhazk.islah.R;
         import com.talhazk.islah.app.Config;
+        import com.talhazk.islah.httpcontrol.CopyFile;
+        import com.talhazk.islah.model.AppChooser;
         import com.talhazk.islah.model.Ayats;
         import com.talhazk.islah.model.AyatsList;
         import com.talhazk.islah.model.CheckInternet;
@@ -132,6 +134,7 @@ public class SpecificCategory extends ListActivity {
 
         setContentView(R.layout.activity_specific_category);
         requestQueue = Volley.newRequestQueue(this);
+        ayats.clear();
 
         imageExtra =(ImageView) findViewById(R.id.headerImage);
         catName = (TextView) findViewById(R.id.catName);
@@ -191,7 +194,6 @@ public class SpecificCategory extends ListActivity {
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         ayats = AyatsList.get().getDialogues();
 
-
         Picasso
                 .with(getApplicationContext())
                 .load(catImage)
@@ -238,6 +240,7 @@ public class SpecificCategory extends ListActivity {
             public void onResponse(String response) {
                 Log.d("response", response.toString());
                 hideProgressDialog();
+
                 parseData(response);
 
 
@@ -360,10 +363,10 @@ public class SpecificCategory extends ListActivity {
                     Math.min(j.getAyatTitle().length(), 30))
                     + " ...";
             dialogueTitle.setText(mDial);
-//            mFvrtLayout = (LinearLayout) convertView
-            //                  .findViewById(R.id.fvrtBtnListener);
+       mFvrtLayout = (LinearLayout) convertView
+                              .findViewById(R.id.fvrtBtnListener);
 
-            //  fvrtBtn = (ImageView) convertView.findViewById(R.id.fvrtBtn);
+              fvrtBtn = (ImageView) convertView.findViewById(R.id.fvrtBtn);
 
             ImageView playBtn = (ImageView) convertView
                     .findViewById(R.id.playBtn);
@@ -426,8 +429,8 @@ public class SpecificCategory extends ListActivity {
                 }
             });
 
-            //shareBtn = (TextView) convertView.findViewById(R.id.shareBtn);
-            /*shareBtn.setOnClickListener(new View.OnClickListener() {
+            shareBtn = (TextView) convertView.findViewById(R.id.shareBtn);
+            shareBtn.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
@@ -449,11 +452,11 @@ public class SpecificCategory extends ListActivity {
                                 .isNetConnected(getApplicationContext())) {
                             String arg[] = new String[3];
                             arg[2] = "share";
-                            arg[1] = DialoguesList.get().getDialogues()
-                                    .get(posi).getLink();
-                            arg[0] = "http://www.pakwedds.com/sayit/sound/"
-                                    + DialoguesList.get().getDialogues()
-                                    .get(posi).getLink() + ".aac";
+                            arg[1] = AyatsList.get().getDialogues()
+                                    .get(posi).getIslahAudio();
+                            arg[0] = Config.AUDIO_URL
+                                    + AyatsList.get().getDialogues()
+                                    .get(posi).getIslahAudio() + ".mp3";
                             new com.talhazk.islah.httpcontrol.HttpAudio(
                                     SpecificCategory.this, "share")
                                     .executeOnExecutor(
@@ -468,7 +471,7 @@ public class SpecificCategory extends ListActivity {
                     }
                 }
             });
-*/
+
             return convertView;
 
         }
@@ -694,21 +697,6 @@ public class SpecificCategory extends ListActivity {
         JSONArray array = null;
         try {
             array = new JSONArray(response);
-            //status = obj.getInt(Config.API_STATUS);
-
-          /*  if (status == 0) {
-
-               // array = obj.getJSONArray(Config.JASON_ARR);
-            } else {
-
-                mMsg = obj.getString(Config.API_MSG);
-            //    Toast.makeText(getActivity(),mMsg, Toast.LENGTH_SHORT).show();
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        if (status == 0) {*/
             for (int i = 0; i < array.length(); i++) {
                 //  Restaurant superHero = new SuperHeroes();
                 JSONObject json = null;
@@ -769,9 +757,9 @@ public class SpecificCategory extends ListActivity {
         recyclerView.setAdapter(adapter);
       */
 
-        /*adapter = new JobListAdapter(ayats);
+        adapter = new JobListAdapter(ayats);
         setListAdapter(adapter);
-        */
+
     }
 
 

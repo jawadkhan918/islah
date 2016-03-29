@@ -22,7 +22,7 @@ public class CopyFile {
     public void deleteDir() {
 
         File dir = new File(Environment.getExternalStorageDirectory()
-                + "/.sayittemp");
+                + "/.islahtemp");
         if (dir.isDirectory()) {
             String[] children = dir.list();
             for (int i = 0; i < children.length; i++) {
@@ -38,7 +38,7 @@ public class CopyFile {
         File des = null;
         try {
 
-            des = createTemporaryFile("sendAudio", ".aac");
+            des = createTemporaryFile("sendAudio", ".mp3");
             CopyFile.moveFile(src, des);
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -50,7 +50,7 @@ public class CopyFile {
 
     private File createTemporaryFile(String part, String ext) throws Exception {
         File tempDir = Environment.getExternalStorageDirectory();
-        tempDir = new File(tempDir.getAbsolutePath() + "/.sayittemp/");
+        tempDir = new File(tempDir.getAbsolutePath() + "/.islahtemp/");
         if (!tempDir.exists()) {
             tempDir.mkdir();
         }

@@ -29,4 +29,5 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile project(':drawerlibrary')
     compile project(':volley')
+    compile project(':commons-io-2.4')
 }

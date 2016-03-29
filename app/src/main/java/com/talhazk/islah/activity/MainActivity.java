@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.talhazk.islah.activity.AudioListActivity;
+import com.talhazk.islah.utils.DatabaseHandler;
 
 
 public class MainActivity extends AppCompatActivity  {
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_view);
         requestQueue = Volley.newRequestQueue(this);
+        DatabaseHandler db = new DatabaseHandler(
+                getApplicationContext());
+        db.getAllFavorities();
 
         pDialog = new ProgressDialog(MainActivity.this);
         pDialog.setMessage("Loading...");

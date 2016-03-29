@@ -39,7 +39,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.SpecificCategory"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="com.whatsapp.action.WHATSAPP_RECORDING" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="audio/*" />
+            </intent-filter>
+        </activity>
 
 
     </application>
