@@ -3,6 +3,7 @@ package com.talhazk.islah.activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -42,6 +43,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +90,7 @@ public class AudioListActivity extends AppCompatActivity {
     // Audio Play Pos
     private static int playPos = -1;
 //end
+private static final int SHARE_TO_MESSENGER_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -369,7 +372,7 @@ public class AudioListActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         //  switch (play.getId()) {
                         //case R.id.playButton:
-                        playAudio(pos);
+                        whatsappShare(pos);
 
                         whatsappBtn.setBackgroundResource(R.drawable.button_pause);
                         int pos = getAdapterPosition();
@@ -397,6 +400,51 @@ public class AudioListActivity extends AppCompatActivity {
                 });
             }
         }
+    }
+
+    private void whatsappShare(int pos) {
+        PackageManager pm = getPackageManager();
+        String audioId = ayats.get(pos).getIslahAudio();
+
+//        String completePath = new CopyFile().destinationPath(fName);
+  //      File file = new File(completePath);
+
+     String fName=   this.getDir("audio",
+                Context.MODE_PRIVATE).getAbsolutePath()
+                + "/"
+                + ayats.get(pos).getIslahAudio() + ".mp3";
+
+//        String completePath = new CopyFile().destinationPath(fName);
+  //      File file = new File(completePath);
+    //    Uri uri = Uri.fromFile(file);
+        String mimeType = "audio/mpeg";
+/*
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        List<String> whitelist = Arrays.asList("com.whatsapp",
+                "com.facebook.orca", "com.viber.voip", "tencent.mm");
+        intent.setType(mimeType);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent = AppChooser.create(pm, intent, "Share", whitelist);
+
+        Uri uri = Uri.parse("file:///data/data/com.talhazk.islah/app_audio/"+ audioId +".mp3");
+        String mimeType = "audio/mp3";*/
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        List<String> whitelist = Arrays.asList("com.whatsapp",
+                "com.facebook.orca", "com.viber.voip", "tencent.mm");
+        intent.setType(mimeType);
+      //  intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.setPackage("com.whatsapp");
+        // intent.putExtra(EXTRA_PROTOCOL_VERSION, PROTOCOL_VERSION);
+        // intent.putExtra(EXTRA_APP_ID, YOUR_APP_ID);
+        //intent = AppChooser.create(pm, intent, "Share", whitelist);
+        this.startActivityForResult(intent, SHARE_TO_MESSENGER_REQUEST_CODE);
+     /*   String audioId = ayats.get(pos).getIslahAudio();
+        final Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+        shareIntent.setPackage("com.whatsapp");
+        shareIntent.setType("audio/mpeg");
+        shareIntent.putExtra(android.content.Intent.EXTRA_STREAM, Uri.parse("file:///data/data/com.talhazk.islah/app_audio/"+audioId+".mp3"));
+        startActivity(Intent.createChooser(shareIntent, "Listen"));*/
     }
 
     private void playAyat(View view, int pos) {

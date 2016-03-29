@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity  {
                         Toast.makeText(v.getContext(), "clickable "+ position , Toast.LENGTH_SHORT).show();
 
                         Intent intent;
-                        intent = new Intent(getApplicationContext(), AudioListActivity.class);
+                        intent = new Intent(getApplicationContext(), SpecificCategory.class);
                         intent.putExtra("position",position);
 
                         startActivity(intent);

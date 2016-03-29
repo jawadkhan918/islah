@@ -28,6 +28,17 @@
         <activity android:name=".activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".activity.AudioListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="com.whatsapp.action.WHATSAPP_RECORDING">
+                </action>
+                <category android:name="android.intent.category.DEFAULT">
+                </category>
+                <data android:mimeType="audio/*">
+                </data>
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.SpecificCategory"
             android:theme="@style/AppTheme.NoActionBar"/>
 
 

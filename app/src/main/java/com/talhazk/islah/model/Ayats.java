@@ -56,4 +56,6 @@ public class Ayats {
     public void setStatus(int status) {
         this.status = status;
     }
+
+
 }
