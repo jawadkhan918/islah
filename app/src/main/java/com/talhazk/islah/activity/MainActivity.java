@@ -3,9 +3,13 @@ package com.talhazk.islah.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +27,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.talhazk.islah.*;
@@ -37,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.talhazk.islah.activity.AudioListActivity;
+import com.talhazk.islah.model.CheckInternet;
 import com.talhazk.islah.utils.DatabaseHandler;
 
 
@@ -54,35 +62,71 @@ public class MainActivity extends AppCompatActivity  {
     TextView output ;
     LinearLayoutManager linearLayoutManager;
     private ProgressDialog pDialog;
-
+    private AdView adView;
+    TextView checkInternet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.list_view);
-        requestQueue = Volley.newRequestQueue(this);
-        DatabaseHandler db = new DatabaseHandler(
-                getApplicationContext());
-        db.getAllFavorities();
+            setContentView(R.layout.list_view);
+        checkInternet = (TextView) findViewById(R.id.checkInternet);
+        if (CheckInternet.isNetConnected(getApplicationContext())) {
 
-        pDialog = new ProgressDialog(MainActivity.this);
-        pDialog.setMessage("Loading...");
-        pDialog.setCancelable(false);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
 
-        if(categoryItems.isEmpty())
-            getCategoryList();
-        recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-        linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawer.setDrawerListener(toggle);
+            toggle.syncState();
+
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this);
+
+            requestQueue = Volley.newRequestQueue(this);
+            DatabaseHandler db = new DatabaseHandler(
+                    getApplicationContext());
+            db.getAllFavorities();
 
 
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Loading...");
+            pDialog.setCancelable(false);
 
-        adapter = new MyRecyclerAdapter(categoryItems);
-        recyclerView.setAdapter(adapter);
-        output = (TextView) findViewById(R.id.category_name);
+
+            adView = new AdView(this);
+            adView.setAdSize(AdSize.SMART_BANNER);
+            adView.setAdUnitId("ca-app-pub-7714528612911729/4846335496");
+
+            RelativeLayout layout = (RelativeLayout) findViewById(R.id.main_activity_layout);
+            layout.addView(adView);
+
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) adView
+                    .getLayoutParams();
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+            adView.setLayoutParams(params);
+
+            AdRequest adRequest = new AdRequest.Builder().build();
+
+            adView.loadAd(adRequest);
+            if (categoryItems.isEmpty())
+                getCategoryList();
+            recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+            linearLayoutManager = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(linearLayoutManager);
+
+
+            adapter = new MyRecyclerAdapter(categoryItems);
+            recyclerView.setAdapter(adapter);
+            output = (TextView) findViewById(R.id.category_name);
+        } else {
+            Toast.makeText(getApplicationContext(), "Check your Internet", Toast.LENGTH_SHORT).show();
+            checkInternet.setVisibility(View.VISIBLE);
+        }
+
 
     }
-
 
     private void getCategoryList() {
         showProgressDialog();
@@ -137,6 +181,7 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onErrorResponse(VolleyError error) {
                 hideProgressDialog();
+                checkInternet.setVisibility(View.VISIBLE);
                 VolleyLog.d("Error: " + error.getMessage());
                 Toast.makeText(getApplicationContext(),
                         "Try Again!!", Toast.LENGTH_SHORT).show();

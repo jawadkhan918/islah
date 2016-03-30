@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/favorities_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/favrtText"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:gravity="center_horizontal"
+        android:text="No Favourite Added"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone" />
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp" >
+    </ListView>
+
+</RelativeLayout>

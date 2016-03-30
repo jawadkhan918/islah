@@ -13,6 +13,7 @@ package com.talhazk.islah.activity;
         import android.content.pm.PackageManager;
         import android.graphics.Bitmap;
         import android.graphics.Canvas;
+        import android.graphics.Color;
         import android.graphics.Path;
         import android.graphics.Rect;
         import android.media.AudioManager;
@@ -22,6 +23,7 @@ package com.talhazk.islah.activity;
         import android.os.AsyncTask;
         import android.os.Bundle;
         import android.support.v4.content.LocalBroadcastManager;
+        import android.support.v7.app.ActionBar;
         import android.util.Log;
         import android.view.View;
         import android.view.ViewGroup;
@@ -32,6 +34,7 @@ package com.talhazk.islah.activity;
         import android.widget.ImageView;
         import android.widget.LinearLayout;
         import android.widget.ListView;
+        import android.widget.RelativeLayout;
         import android.widget.TextView;
         import android.widget.Toast;
 
@@ -42,6 +45,9 @@ package com.talhazk.islah.activity;
         import com.android.volley.VolleyLog;
         import com.android.volley.toolbox.StringRequest;
         import com.android.volley.toolbox.Volley;
+        import com.google.android.gms.ads.AdRequest;
+        import com.google.android.gms.ads.AdSize;
+        import com.google.android.gms.ads.AdView;
         import com.squareup.picasso.Picasso;
         import com.talhazk.islah.R;
         import com.talhazk.islah.app.Config;
@@ -67,6 +73,7 @@ package com.talhazk.islah.activity;
 
 public class SpecificCategory extends ListActivity {
 
+
     RequestQueue requestQueue;
 
     private static final int SHARE_TO_MESSENGER_REQUEST_CODE = 1;
@@ -83,7 +90,9 @@ public class SpecificCategory extends ListActivity {
     //private TextView mStatus;
     private ImageButton mBackBtn;
     private TextView shareBtn;
-    private TextView dialogueTitle;
+    private TextView ayatTitle;
+    private TextView ayatNo;
+
     private View progressDialog;
 
     //  ImageLoader imageLoader;
@@ -123,6 +132,8 @@ public class SpecificCategory extends ListActivity {
     String categoryName;
     int position;
     ImageView imageExtra;
+    private AdView adView;
+
     // Ads Variable
 
     // facebook
@@ -134,8 +145,24 @@ public class SpecificCategory extends ListActivity {
 
         setContentView(R.layout.activity_specific_category);
         requestQueue = Volley.newRequestQueue(this);
-        ayats.clear();
+       // ayats.clear();
 
+
+        adView = new AdView(this);
+        adView.setAdSize(AdSize.SMART_BANNER);
+        adView.setAdUnitId("ca-app-pub-7714528612911729/4846335496");
+
+        RelativeLayout layout = (RelativeLayout)findViewById(R.id.specific_layout);
+        layout.addView(adView);
+
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) adView
+                .getLayoutParams();
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        adView.setLayoutParams(params);
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+      //  AdRequest.Builder.addTestDevice("79176A4D625C750A744A6477BF2E301D");
+       adView.loadAd(adRequest);
         imageExtra =(ImageView) findViewById(R.id.headerImage);
         catName = (TextView) findViewById(R.id.catName);
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
@@ -143,14 +170,14 @@ public class SpecificCategory extends ListActivity {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            //        window.setStatusBarColor(getResources()
-            //              .getColor(R.color.themecolor));
+                    window.setStatusBarColor(getResources()
+                          .getColor(R.color.themecolor));
         }
-        //     getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        //   getActionBar().setCustomView(R.layout.custom_actionbar);
-        //   TextView txt = (TextView) findViewById(R.id.actionbar_title);
-        //txt.setText(HollywoodFragment.sCatName);
-
+      /*       getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+           getActionBar().setCustomView(R.layout.custom_actionbar);
+          TextView txt = (TextView) findViewById(R.id.actionbar_title);
+        txt.setText("ca");
+*/
         // Local BroadCaster
 
         Intent i = getIntent();
@@ -216,6 +243,7 @@ public class SpecificCategory extends ListActivity {
     private void showProgressDialog() {
         if (!pDialog.isShowing())
             pDialog.show();
+        ayats.clear();
         Log.e("dialog is invoked", "true");
 
     }
@@ -240,7 +268,7 @@ public class SpecificCategory extends ListActivity {
             public void onResponse(String response) {
                 Log.d("response", response.toString());
                 hideProgressDialog();
-
+                ayats.clear();
                 parseData(response);
 
 
@@ -252,6 +280,7 @@ public class SpecificCategory extends ListActivity {
                 VolleyLog.d("Error", "Error: " + error.getMessage());
                 Toast.makeText(SpecificCategory.this, "Try again!! ", Toast.LENGTH_SHORT).show();
                 hideProgressDialog();
+
             }
         }) {
 
@@ -279,7 +308,7 @@ public class SpecificCategory extends ListActivity {
     public void onListItemClick(ListView l, View v, int position, long id) {
         // TODO Auto-generated method stub
 
-        Toast.makeText(getApplicationContext(),"this called",Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getApplicationContext(),"this called",Toast.LENGTH_SHORT).show();
 
         Log.d("a","called");
 
@@ -357,13 +386,18 @@ public class SpecificCategory extends ListActivity {
             // pos = position;
             Ayats j = getItem(position);
 
-            dialogueTitle = (TextView) convertView
+            ayatTitle = (TextView) convertView
                     .findViewById(R.id.list_item_userName);
-            String mDial = j.getAyatTitle().substring(0,
-                    Math.min(j.getAyatTitle().length(), 30))
-                    + " ...";
-            dialogueTitle.setText(mDial);
-       mFvrtLayout = (LinearLayout) convertView
+            ayatNo = (TextView) convertView
+                    .findViewById(R.id.ayatNo);
+
+            String mDial = j.getAyatTitle();
+            String ayatNoText = j.getAyatNo();
+
+            ayatTitle.setText(mDial);
+            ayatNo.setText(ayatNoText);
+
+            mFvrtLayout = (LinearLayout) convertView
                               .findViewById(R.id.fvrtBtnListener);
 
               fvrtBtn = (ImageView) convertView.findViewById(R.id.fvrtBtn);
@@ -720,17 +754,17 @@ public class SpecificCategory extends ListActivity {
                     islahAudio = json.getString(Config.ISLAH_AUDIO);
 
                     String[] parts = splitter.split("Ayat");
-                    //       String part1 = parts[0]; // 004
-                    //     String part2 = parts[1]; // 034556
+                          String part1 = parts[0]; // 004
+                         String part2 = parts[1]; // 034556
 
-/*
-                    ayatTitle = part1;
+                    ayatTitle = "Surah " + part1;
                     ayatNo = "Ayat " + part2;
-*/
+/*
 
                     ayatTitle = splitter;
                     ayatNo = "Ayat " ;
 
+*/
                     Ayats ayatList = new Ayats(ayatStatus, ayatId, ayatTitle, ayatNo, islahAudio);
                     ayats.add(ayatList);
 
