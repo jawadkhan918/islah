@@ -1,4 +1,14 @@
 <resources>
-    <string name="app_name">Islah</string>
+    <string name="app_name">ISLAH</string>
     <string name="action_settings">Settings</string>
+    <string name="shareOnWhatsapp">Share the app with your 10 whatsapp friends and unlock a new category with 100 plus audios of daily used with the name Trending</string>
+    <string name="shareOnFacebook">Share the app on your Facebook wall and unlock a new category with 100 plus audios of daily used with the name Trending</string>
+
+
+    <string name="share2">Ask WhatsApp friends to install it </string>
+    <string name="share3">Share link on your facebook wall</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="facebook_app_id">469334223259711</string>
 </resources>

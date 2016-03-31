@@ -2,8 +2,11 @@ package com.talhazk.islah.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,8 +15,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,9 +37,9 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 import com.talhazk.islah.*;
 import com.talhazk.islah.app.Config;
+import com.talhazk.islah.fragment.InviteFragment;
 import com.talhazk.islah.model.Category;
 
 import org.json.JSONArray;
@@ -43,23 +49,24 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.talhazk.islah.activity.AudioListActivity;
+import android.app.*;
+
 import com.talhazk.islah.model.CheckInternet;
 import com.talhazk.islah.utils.DatabaseHandler;
 
 
-public class MainActivity extends AppCompatActivity  {
-  //  private br.liveo.model.HelpLiveo mHelpLiveo;
-   // String loginURL="http://www.pakwedds.com/islah/get_category.php";
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    //  private br.liveo.model.HelpLiveo mHelpLiveo;
+    // String loginURL="http://www.pakwedds.com/islah/get_category.php";
     String data = "";
     String jsonResponse;
     Category item;
 
-    public  static List<Category> categoryItems = new ArrayList<Category>();
+    public static List<Category> categoryItems = new ArrayList<Category>();
     RecyclerView recyclerView;
     RequestQueue requestQueue;
     MyRecyclerAdapter adapter;
-    TextView output ;
+    TextView output;
     LinearLayoutManager linearLayoutManager;
     private ProgressDialog pDialog;
     private AdView adView;
@@ -68,9 +75,23 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-            setContentView(R.layout.list_view);
+        //      setContentView(R.layout.list_view);
+        setContentView(R.layout.activity_main);
+
         checkInternet = (TextView) findViewById(R.id.checkInternet);
         if (CheckInternet.isNetConnected(getApplicationContext())) {
+            Window window = this.getWindow();
+
+// clear FLAG_TRANSLUCENT_STATUS flag:
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+// finally change the color
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.setStatusBarColor(this.getResources().getColor(R.color.themecolor));
+            }
 
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
@@ -83,6 +104,7 @@ public class MainActivity extends AppCompatActivity  {
 
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
+
 
             requestQueue = Volley.newRequestQueue(this);
             DatabaseHandler db = new DatabaseHandler(
@@ -156,11 +178,11 @@ public class MainActivity extends AppCompatActivity  {
 
                                 // String logo = person.getString("email");
                                 Log.e("name is", name);
-                                Log.e("id is", ""+id);
+                                Log.e("id is", "" + id);
                                 Log.e("name is", name);
                                 Log.e("name is", name);
                                 //del this
-                                item = new Category(id,name,logo,image);
+                                item = new Category(id, name, logo, image);
                                 categoryItems.add(item);
 
                                 //     Toast.makeText(getApplicationContext(), "name is " +item.getName()  , Toast.LENGTH_SHORT).show();
@@ -212,7 +234,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
 
-    private  class MyRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private class MyRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         //    private static final int TYPE_HEADER = 0;
         private static final int TYPE_ITEM = 0;
@@ -234,8 +256,7 @@ public class MainActivity extends AppCompatActivity  {
             throw new RuntimeException("there is no type that matches the type " + viewType + " + make sure your using types correctly");
         }
 
-        private Category getItem(int position)
-        {
+        private Category getItem(int position) {
             return categoryItems.get(position);
         }
 
@@ -243,10 +264,10 @@ public class MainActivity extends AppCompatActivity  {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-           // Category currentItem = getItem(position);
-         //  VHItem VHitem = (VHItem) holder;
+            // Category currentItem = getItem(position);
+            //  VHItem VHitem = (VHItem) holder;
             //    tempPath=currentItem.getPath();
-         //   VHitem.output.setText(categoryItems.getName());
+            //   VHitem.output.setText(categoryItems.getName());
             //   VHitem.iv.setImageBitmap(camera.loadImageFromStorage(currentItem.getPath(),currentItem.getUserName()));
             Category cat = categoryItems.get(position);
 
@@ -259,18 +280,17 @@ public class MainActivity extends AppCompatActivity  {
                     .with(getApplicationContext())
                     .load(cat.getImage())
                     .fit() // will explain later
-                    .placeholder(getApplicationContext().getResources().getDrawable(R.drawable.default_img))
-                    .error(getApplicationContext().getResources().getDrawable(R.drawable.default_img))
+                    .placeholder(getApplicationContext().getResources().getDrawable(R.color.nliveo_black))
+                    .error(getApplicationContext().getResources().getDrawable(R.color.nliveo_black))
                     .into(((VHItem) holder).image);
 
             Picasso
                     .with(getApplicationContext())
                     .load(cat.getLogo())
                     .fit() // will explain later
-                    .placeholder(getApplicationContext().getResources().getDrawable(R.drawable.default_img))
-                    .error(getApplicationContext().getResources().getDrawable(R.drawable.default_img))
+                    .placeholder(getApplicationContext().getResources().getDrawable(R.color.nliveo_black))
+                    .error(getApplicationContext().getResources().getDrawable(R.color.nliveo_black))
                     .into(((VHItem) holder).logo);
-
 
 
         }
@@ -295,9 +315,9 @@ public class MainActivity extends AppCompatActivity  {
             public VHItem(View itemView) {
                 super(itemView);
 
-                this.categoryName = (TextView)itemView.findViewById(R.id.category_name);
-                this.image = (ImageView)itemView.findViewById(R.id.image);
-                this.logo = (ImageView)itemView.findViewById(R.id.logo_image);
+                this.categoryName = (TextView) itemView.findViewById(R.id.category_name);
+                this.image = (ImageView) itemView.findViewById(R.id.image);
+                this.logo = (ImageView) itemView.findViewById(R.id.logo_image);
 
 
                 itemView.setClickable(true);
@@ -306,11 +326,11 @@ public class MainActivity extends AppCompatActivity  {
                     public void onClick(View v) {
 
                         int position = getAdapterPosition();
-                        Toast.makeText(v.getContext(), "clickable "+ position , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(v.getContext(), "clickable " + position, Toast.LENGTH_SHORT).show();
 
                         Intent intent;
                         intent = new Intent(getApplicationContext(), SpecificCategory.class);
-                        intent.putExtra("position",position);
+                        intent.putExtra("position", position);
 
                         startActivity(intent);
 
@@ -322,8 +342,68 @@ public class MainActivity extends AppCompatActivity  {
     }
 
 
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
 
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        Fragment newContent = null;
+        if (id == R.id.categoriesMenu) {
+            // Handle the camera action
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+
+
+            Toast.makeText(getApplicationContext(), "categoires", Toast.LENGTH_SHORT).show();
+
+        } else if (id == R.id.favoritesMenu) {
+
+            Intent i = new Intent(getApplicationContext(),FavoritiesActivity.class);
+            startActivity(i);
+
+        } else if (id == R.id.shareMenu) {
+            Intent i = new Intent(getApplicationContext(),InviteFragment.class);
+            startActivity(i);
+
+           /* FragmentManager fragmentManager = getFragmentManager();
+                InviteFragment ddf = new InviteFragment();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.invite_fragment, ddf, "dearDiaryFragment");
+                fragmentTransaction.addToBackStack("dearDiaryFragment");
+                fragmentTransaction.commit();*/
+/*
+            FragmentManager fm = getFragmentManager();
+            //FragmentManager fm = this.getFragmentManager();
+            InviteFragment guests = new InviteFragment();
+            guests.show(fm, "Sample Fragment");
+*/
+
+       /*     InviteFragment fragmentS1 = new InviteFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.invite_fragment, fragmentS1).commit();
+          */  }
+
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+            return true;
+
+    }
+
+    private void switchFragment(Fragment fragment) {
+        if (this == null)
+            return;
+
+    }
 
 
 }

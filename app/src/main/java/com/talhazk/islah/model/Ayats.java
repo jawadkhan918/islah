@@ -9,12 +9,22 @@ public class Ayats {
     String ayatTitle;
     String  islahAudio;
     String ayatNo;
-    public Ayats(int status,int ayatId, String ayatTitle,String ayatNo, String islahAudio ) {
+    String catId;
+    public Ayats(int status,int ayatId, String ayatTitle,String ayatNo, String islahAudio,String catId) {
         this.ayatId = ayatId;
         this.ayatTitle = ayatTitle;
         this.islahAudio = islahAudio;
         this.ayatNo = ayatNo;
         this.status = status;
+        this.catId = catId;
+    }
+
+    public String getCatId() {
+        return catId;
+    }
+
+    public void setCatId(String catId) {
+        this.catId = catId;
     }
 
     public int getAyatId() {

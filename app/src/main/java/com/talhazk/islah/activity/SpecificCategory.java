@@ -16,14 +16,20 @@ package com.talhazk.islah.activity;
         import android.graphics.Color;
         import android.graphics.Path;
         import android.graphics.Rect;
+        import android.graphics.drawable.ColorDrawable;
         import android.media.AudioManager;
         import android.media.MediaPlayer;
         import android.media.MediaPlayer.OnCompletionListener;
         import android.net.Uri;
         import android.os.AsyncTask;
         import android.os.Bundle;
+        import android.support.annotation.Nullable;
         import android.support.v4.content.LocalBroadcastManager;
         import android.support.v7.app.ActionBar;
+        import android.support.v7.app.AppCompatCallback;
+        import android.support.v7.app.AppCompatDelegate;
+        import android.support.v7.view.ActionMode;
+        import android.support.v7.widget.Toolbar;
         import android.util.Log;
         import android.view.View;
         import android.view.ViewGroup;
@@ -71,7 +77,7 @@ package com.talhazk.islah.activity;
         import java.util.List;
         import java.util.Map;
 
-public class SpecificCategory extends ListActivity {
+public class SpecificCategory extends ListActivity  {
 
 
     RequestQueue requestQueue;
@@ -89,7 +95,7 @@ public class SpecificCategory extends ListActivity {
     //private TextView mAudios;
     //private TextView mStatus;
     private ImageButton mBackBtn;
-    private TextView shareBtn;
+    private ImageView shareBtn;
     private TextView ayatTitle;
     private TextView ayatNo;
 
@@ -133,7 +139,7 @@ public class SpecificCategory extends ListActivity {
     int position;
     ImageView imageExtra;
     private AdView adView;
-
+    private AppCompatDelegate delegate;
     // Ads Variable
 
     // facebook
@@ -146,11 +152,26 @@ public class SpecificCategory extends ListActivity {
         setContentView(R.layout.activity_specific_category);
         requestQueue = Volley.newRequestQueue(this);
        // ayats.clear();
+/*
 
+        delegate = AppCompatDelegate.create(this, this);
+
+        //we need to call the onCreate() of the AppCompatDelegate
+        delegate.onCreate(savedInstanceState);
+
+        //we use the delegate to inflate the layout
+        delegate.setContentView(R.layout.activity_specific_category);
+
+        //Finally, let's add the Toolbar
+        Toolbar toolbar= (Toolbar) findViewById(R.id.mytoolbar);
+        delegate.setSupportActionBar(toolbar);
+*/
 
         adView = new AdView(this);
         adView.setAdSize(AdSize.SMART_BANNER);
         adView.setAdUnitId("ca-app-pub-7714528612911729/4846335496");
+
+
 
         RelativeLayout layout = (RelativeLayout)findViewById(R.id.specific_layout);
         layout.addView(adView);
@@ -225,8 +246,8 @@ public class SpecificCategory extends ListActivity {
                 .with(getApplicationContext())
                 .load(catImage)
                 .fit() // will explain later
-                .placeholder(getApplicationContext().getResources().getDrawable(R.drawable.default_img))
-                .error(getApplicationContext().getResources().getDrawable(R.drawable.default_img))
+                .placeholder(getApplicationContext().getResources().getDrawable(R.color.nliveo_black))
+                .error(getApplicationContext().getResources().getDrawable(R.color.nliveo_black))
                 .into(imageExtra);
 
 
@@ -365,7 +386,7 @@ public class SpecificCategory extends ListActivity {
     }
 
     public void Test(View view) {
-        Log.d("this is test",ayats.get(position).getAyatTitle());
+        Log.d("this is test", ayats.get(position).getAyatTitle());
     }
 
     private class JobListAdapter extends ArrayAdapter<Ayats> {
@@ -463,7 +484,7 @@ public class SpecificCategory extends ListActivity {
                 }
             });
 
-            shareBtn = (TextView) convertView.findViewById(R.id.shareBtn);
+            shareBtn = (ImageView) convertView.findViewById(R.id.shareBtn);
             shareBtn.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -765,7 +786,9 @@ public class SpecificCategory extends ListActivity {
                     ayatNo = "Ayat " ;
 
 */
-                    Ayats ayatList = new Ayats(ayatStatus, ayatId, ayatTitle, ayatNo, islahAudio);
+                    String catIdAyat = MainActivity.categoryItems.get(position).getName() ;
+                    Log.d("this will show",catIdAyat);
+                    Ayats ayatList = new Ayats(ayatStatus, ayatId, ayatTitle, ayatNo, islahAudio,catIdAyat);
                     ayats.add(ayatList);
 
 
@@ -795,8 +818,6 @@ public class SpecificCategory extends ListActivity {
         setListAdapter(adapter);
 
     }
-
-
 
 
 

@@ -6,7 +6,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="100dp"
         android:gravity="center" >
 
         <ImageView
@@ -60,32 +60,40 @@
 
         />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/ayatCatid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ayat Cat Id"
 
+        />
+
+</LinearLayout>
 
         <LinearLayout
             android:paddingRight="10dp"
             android:id="@+id/shareBtnListener"
             android:layout_width="40dp"
             android:layout_height="fill_parent"
-           android:layout_alignParentRight="true"
+            android:layout_alignParentRight="true"
             android:clickable="true"
             android:gravity="center" >
 
-        <ImageView
-            android:id="@+id/shareBtn"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentRight="true"
-            android:clickable="true"
+            <ImageView
+                android:id="@+id/shareBtn"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentRight="true"
+                android:clickable="true"
 
-            android:layout_gravity="center"
-           android:background="@drawable/fb_messenger_icon"
+                android:layout_gravity="center"
+                android:background="@drawable/fb_messenger_icon"
 
-            />
-</LinearLayout>
+                />
+        </LinearLayout>
         <LinearLayout
             android:id="@+id/fvrtBtnListener"
+
             android:layout_width="50dp"
             android:layout_height="fill_parent"
             android:layout_toLeftOf="@+id/shareBtnListener"

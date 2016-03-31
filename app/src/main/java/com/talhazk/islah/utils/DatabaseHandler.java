@@ -36,7 +36,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_TABLE_ID = "tableid";
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
+    private static final String KEY_CAT_ID = "catid";
     private static final String KEY_LINK = "link";
+    private static final String KEY_AYAT_NO = "ayatno";
+
+
     private static final String KEY_USE = "use";
     private static final String KEY_COUNT_HINDI = "countHindi";
     private static final String KEY_COUNT_ENGLISH = "countEnglish";
@@ -54,7 +58,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_FAVORITES_TABLE = "CREATE TABLE " + TABLE_FAVORITES + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
-                + KEY_LINK + " TEXT," + KEY_USE + " TEXT" + ")";
+                + KEY_CAT_ID + " TEXT," + KEY_AYAT_NO + " TEXT," + KEY_LINK + " TEXT," + KEY_USE + " TEXT" + ")";
 
         String CREATE_TRENDING_TABLE = "CREATE TABLE " + TABLE_TRENDING + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
@@ -96,7 +100,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         values.put(KEY_ID, fvrt.getAyatId());
         values.put(KEY_NAME, fvrt.getAyatTitle()); // Contact Name
+        values.put(KEY_CAT_ID, fvrt.getCatId());
+        values.put(KEY_AYAT_NO, fvrt.getAyatNo());
         values.put(KEY_LINK, fvrt.getIslahAudio());
+
         values.put(KEY_USE, "1"); // Contact Phone
         db.insert(TABLE_FAVORITES, null, values); // Inserting Row
         db.close(); // Closing database connection
@@ -147,8 +154,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 FavoritiesList.get().addFavorities(
-                        new Favorities(cursor.getInt(0), cursor.getString(1),
-                                cursor.getString(2)));
+                        new Favorities(cursor.getInt(0), cursor.getString(1), cursor.getString(2),cursor.getString(3),cursor.getString(4)));
                 Log.e("print,",""+cursor.getString(2));
             } while (cursor.moveToNext());
         }
